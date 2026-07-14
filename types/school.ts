@@ -1,4 +1,4 @@
-export type Phase = "Phase I" | "Phase II" | "Phase III";
+export type Phase = "Phase I" | "Phase II" | "Phase III" | "Phase IV";
 
 export type SchoolStatus = "Active" | "Expired";
 

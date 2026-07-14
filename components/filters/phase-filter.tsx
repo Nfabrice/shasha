@@ -9,6 +9,7 @@ const OPTIONS: { label: string; value: PhaseFilterValue; activeClass: string }[]
   { label: "Phase I", value: "Phase I", activeClass: "bg-blue-600 border-blue-600 text-white" },
   { label: "Phase II", value: "Phase II", activeClass: "bg-orange-500 border-orange-500 text-white" },
   { label: "Phase III", value: "Phase III", activeClass: "bg-emerald-600 border-emerald-600 text-white" },
+  { label: "Phase IV", value: "Phase IV", activeClass: "bg-violet-600 border-violet-600 text-white" },
 ];
 
 export function PhaseFilter() {

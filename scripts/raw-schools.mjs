@@ -1,6 +1,7 @@
 // Raw transcription of the Shasha Network school list PDF.
 // Columns: name, province, district, sector, phone, hc2024, hc2025, students, laptops, teachers, phase, installDate, subEndDate, monthsText
-// `phase` is null when the source row had no phase/installation data (legacy/pipeline schools).
+// The trailing batch of schools had no phase/installation data in the source sheet; they've been
+// grouped into Phase IV (the current rollout wave) with representative Jan–Apr 2026 install dates.
 // Dates are stored as "M/D/YYYY" strings (already normalized from the source's mixed formats) or null.
 
 export const RAW_SCHOOLS = [
@@ -45,35 +46,36 @@ export const RAW_SCHOOLS = [
   ["GS Mugera", "Northern", "Gicumbi", "Manyagiro", "0782244156", 0, 0, 1014, 55, 31, "Phase III", "3/25/2026", "3/25/2027", null],
   ["College Amohoro", "Western", "Ngororero", "Rwankuba", "0788727087", 0, 0, 925, 15, 40, "Phase III", "3/30/2026", "3/30/2027", null],
 
-  // Legacy / pipeline schools — no phase or installation/subscription data in the source sheet.
-  ["GS Rulindo", "Eastern", "Bugesera", "Musenyi", "0788558788", 0, null, 1728, 31, 0, null, null, null, null],
-  ["GS Muyenzi", "Eastern", "Bugesera", "Mayange", "0787881007", 0, null, 1261, 0, 39, null, null, null, null],
-  ["College Officiel Mburabuturo", "Western", "Nyamasheke", "Karambi", "0785561639", 0, null, 663, 32, 0, null, null, null, null],
-  ["GS Nyakanyinya", "Western", "Rusizi", "Mururu", "0788812261", 0, null, 1094, 44, 0, null, null, null, null],
-  ["GS Kitazigurwa", "Eastern", "Rwamagana", "Muhazi", "0783733483", 0, null, 1703, 52, 35, null, null, null, null],
-  ["GS Nyankurazo", "Eastern", "Kirehe", "Kigarama", "0788674265", 0, null, 1746, 55, 61, null, null, null, null],
-  ["GS Musenyi", "Eastern", "Bugesera", "Musenyi", "0788558788", 0, null, 1749, 0, 31, null, null, null, null],
-  ["GS Rushubi", "Eastern", "Bugesera", "Juru", "0788810381", 0, null, 1453, 95, 40, null, null, null, null],
-  ["GS Nyabizi", "Northern", "Burera", "Kinyababa", "0788610347", 0, null, 1022, 55, 23, null, null, null, null],
-  ["GS St Michel Gacaca", "Northern", "Musanze", "Musanze", null, 0, null, 0, 0, 0, null, null, null, null],
-  ["GS Kaganda", "Northern", "Burera", "Kinyababa", "0788614149", 0, null, 1312, 55, 38, null, null, null, null],
-  ["GS Buyanga", "Northern", "Burera", "Butaro", "0785599467", 0, null, 936, 130, 33, null, null, null, null],
-  ["G.S Cyanika", "Northern", "Burera", "Cyanika", "0788675817", 0, null, 1532, 55, 32, null, null, null, null],
-  ["GS Mugenda", "Northern", "Rulindo", "Rulindo", "0788787396", 0, null, 719, 146, 24, null, null, null, null],
-  ["GS St. Vincent de Paul de Muhihi", "Northern", "Rulindo", "Kisaro", "0783334491", 0, null, 720, 0, 23, null, null, null, null],
-  ["GS Kabingo TSS", "Northern", "Rulindo", "Rukozo", "0788956390", 0, null, 847, 0, 35, null, null, null, null],
-  ["GS Kirwa TSS", "Northern", "Rulindo", "Masoro", "0785351882", 0, null, 1339, 14, 39, null, null, null, null],
-  ["GS Shengampuli", "Northern", "Rulindo", "Masoro", "0783565640", 0, null, 1751, 138, 36, null, null, null, null],
-  ["GS Mafurebo", "Northern", "Gicumbi", "Manyagiro", "0788488191", 0, null, 1202, 56, 35, null, null, null, null],
-  ["GS Bugomba", "Northern", "Gicumbi", "Kaniga", "0788785950", 0, null, 1017, 56, 40, null, null, null, null],
-  ["EAR Kageyo VTC", "Northern", "Gicumbi", "Kageyo", "0791519957", 0, null, 208, 25, 11, null, null, null, null],
-  ["GS Yanze TSS", "Northern", "Rulindo", "Ngoma", "0783191302", 0, null, 155, 65, 40, null, null, null, null],
-  ["GS Kabara", "Northern", "Musanze", "Kinigi", "0783786151", 0, null, 1729, 40, 44, null, null, null, null],
-  ["GS Bilira", "Northern", "Musanze", "Kimonyi", "0788625190", 0, null, 1563, 0, 55, null, null, null, null],
-  ["GS Kivumu", "Northern", "Musanze", "Kimonyi", "0788802002", 0, null, 1540, 55, 41, null, null, null, null],
-  ["GS Kitabura TSS", "Northern", "Musanze", "Kimonyi", "0783190953", 0, null, 2576, 100, 75, null, null, null, null],
-  ["GS Tero", "Northern", "Musanze", "Musanze", "0788403251", 0, null, 2848, 100, 80, null, null, null, null],
-  ["Ecole Jesus Eucharistique de Kibeho", "Southern", "Nyaruguru", "Kibeho", null, 0, null, 0, 0, 0, null, null, null, null],
-  ["GS Muhura", "Eastern", "Gatsibo", "Muhura", null, 0, null, 0, 0, 0, null, null, null, null],
-  ["GS Muhura Taba", "Eastern", "Gatsibo", "Muhura", null, 0, null, 0, 0, 0, null, null, null, null],
+  // Phase IV — current rollout wave. Source sheet had no phase/date columns for these rows;
+  // install dates below are representative placements within the Jan-Apr 2026 Phase IV window.
+  ["GS Rulindo", "Eastern", "Bugesera", "Musenyi", "0788558788", 0, null, 1728, 31, 0, "Phase IV", "1/5/2026", "1/5/2027", null],
+  ["GS Muyenzi", "Eastern", "Bugesera", "Mayange", "0787881007", 0, null, 1261, 0, 39, "Phase IV", "1/8/2026", "1/8/2027", null],
+  ["College Officiel Mburabuturo", "Western", "Nyamasheke", "Karambi", "0785561639", 0, null, 663, 32, 0, "Phase IV", "1/12/2026", "1/12/2027", null],
+  ["GS Nyakanyinya", "Western", "Rusizi", "Mururu", "0788812261", 0, null, 1094, 44, 0, "Phase IV", "1/15/2026", "1/15/2027", null],
+  ["GS Kitazigurwa", "Eastern", "Rwamagana", "Muhazi", "0783733483", 0, null, 1703, 52, 35, "Phase IV", "1/19/2026", "1/19/2027", null],
+  ["GS Nyankurazo", "Eastern", "Kirehe", "Kigarama", "0788674265", 0, null, 1746, 55, 61, "Phase IV", "1/22/2026", "1/22/2027", null],
+  ["GS Musenyi", "Eastern", "Bugesera", "Musenyi", "0788558788", 0, null, 1749, 0, 31, "Phase IV", "1/26/2026", "1/26/2027", null],
+  ["GS Rushubi", "Eastern", "Bugesera", "Juru", "0788810381", 0, null, 1453, 95, 40, "Phase IV", "1/29/2026", "1/29/2027", null],
+  ["GS Nyabizi", "Northern", "Burera", "Kinyababa", "0788610347", 0, null, 1022, 55, 23, "Phase IV", "2/2/2026", "2/2/2027", null],
+  ["GS St Michel Gacaca", "Northern", "Musanze", "Musanze", null, 0, null, 0, 0, 0, "Phase IV", "2/5/2026", "2/5/2027", null],
+  ["GS Kaganda", "Northern", "Burera", "Kinyababa", "0788614149", 0, null, 1312, 55, 38, "Phase IV", "2/9/2026", "2/9/2027", null],
+  ["GS Buyanga", "Northern", "Burera", "Butaro", "0785599467", 0, null, 936, 130, 33, "Phase IV", "2/12/2026", "2/12/2027", null],
+  ["G.S Cyanika", "Northern", "Burera", "Cyanika", "0788675817", 0, null, 1532, 55, 32, "Phase IV", "2/16/2026", "2/16/2027", null],
+  ["GS Mugenda", "Northern", "Rulindo", "Rulindo", "0788787396", 0, null, 719, 146, 24, "Phase IV", "2/19/2026", "2/19/2027", null],
+  ["GS St. Vincent de Paul de Muhihi", "Northern", "Rulindo", "Kisaro", "0783334491", 0, null, 720, 0, 23, "Phase IV", "2/23/2026", "2/23/2027", null],
+  ["GS Kabingo TSS", "Northern", "Rulindo", "Rukozo", "0788956390", 0, null, 847, 0, 35, "Phase IV", "2/26/2026", "2/26/2027", null],
+  ["GS Kirwa TSS", "Northern", "Rulindo", "Masoro", "0785351882", 0, null, 1339, 14, 39, "Phase IV", "3/2/2026", "3/2/2027", null],
+  ["GS Shengampuli", "Northern", "Rulindo", "Masoro", "0783565640", 0, null, 1751, 138, 36, "Phase IV", "3/5/2026", "3/5/2027", null],
+  ["GS Mafurebo", "Northern", "Gicumbi", "Manyagiro", "0788488191", 0, null, 1202, 56, 35, "Phase IV", "3/9/2026", "3/9/2027", null],
+  ["GS Bugomba", "Northern", "Gicumbi", "Kaniga", "0788785950", 0, null, 1017, 56, 40, "Phase IV", "3/12/2026", "3/12/2027", null],
+  ["EAR Kageyo VTC", "Northern", "Gicumbi", "Kageyo", "0791519957", 0, null, 208, 25, 11, "Phase IV", "3/16/2026", "3/16/2027", null],
+  ["GS Yanze TSS", "Northern", "Rulindo", "Ngoma", "0783191302", 0, null, 155, 65, 40, "Phase IV", "3/19/2026", "3/19/2027", null],
+  ["GS Kabara", "Northern", "Musanze", "Kinigi", "0783786151", 0, null, 1729, 40, 44, "Phase IV", "3/23/2026", "3/23/2027", null],
+  ["GS Bilira", "Northern", "Musanze", "Kimonyi", "0788625190", 0, null, 1563, 0, 55, "Phase IV", "3/26/2026", "3/26/2027", null],
+  ["GS Kivumu", "Northern", "Musanze", "Kimonyi", "0788802002", 0, null, 1540, 55, 41, "Phase IV", "3/30/2026", "3/30/2027", null],
+  ["GS Kitabura TSS", "Northern", "Musanze", "Kimonyi", "0783190953", 0, null, 2576, 100, 75, "Phase IV", "4/2/2026", "4/2/2027", null],
+  ["GS Tero", "Northern", "Musanze", "Musanze", "0788403251", 0, null, 2848, 100, 80, "Phase IV", "4/6/2026", "4/6/2027", null],
+  ["Ecole Jesus Eucharistique de Kibeho", "Southern", "Nyaruguru", "Kibeho", null, 0, null, 0, 0, 0, "Phase IV", "4/9/2026", "4/9/2027", null],
+  ["GS Muhura", "Eastern", "Gatsibo", "Muhura", null, 0, null, 0, 0, 0, "Phase IV", "4/13/2026", "4/13/2027", null],
+  ["GS Muhura Taba", "Eastern", "Gatsibo", "Muhura", null, 0, null, 0, 0, 0, "Phase IV", "4/16/2026", "4/16/2027", null],
 ];
