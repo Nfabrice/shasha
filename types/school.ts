@@ -35,6 +35,7 @@ export type StatusFilterValue = SchoolStatus | "All";
 
 export interface SchoolFilters {
   search: string;
+  country: string | null;
   province: string | null;
   district: string | null;
   phase: PhaseFilterValue;

@@ -1,8 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
 import { useDashboardStore } from "@/lib/store/dashboard-store";
-import { getProvinces } from "@/services/schools-service";
+import { useAvailableProvinces } from "@/hooks/use-available-provinces";
 import {
   Select,
   SelectContent,
@@ -16,7 +15,7 @@ const ALL_VALUE = "__all__";
 export function ProvinceFilter() {
   const province = useDashboardStore((state) => state.filters.province);
   const setProvince = useDashboardStore((state) => state.setProvince);
-  const provinces = useMemo(() => getProvinces(), []);
+  const provinces = useAvailableProvinces();
 
   return (
     <Select

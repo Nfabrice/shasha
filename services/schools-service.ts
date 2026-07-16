@@ -11,12 +11,17 @@ export function getSchoolById(id: string): School | undefined {
   return SCHOOLS.find((school) => school.id === id);
 }
 
-export function getProvinces(): string[] {
-  return Array.from(new Set(SCHOOLS.map((s) => s.province))).sort();
+export function getCountries(): string[] {
+  return Array.from(new Set(SCHOOLS.map((s) => s.country))).sort();
 }
 
-export function getDistrictsByProvince(province?: string | null): string[] {
-  const source = province ? SCHOOLS.filter((s) => s.province === province) : SCHOOLS;
+export function getProvinces(country?: string | null): string[] {
+  const source = country ? SCHOOLS.filter((s) => s.country === country) : SCHOOLS;
+  return Array.from(new Set(source.map((s) => s.province))).sort();
+}
+
+export function getDistrictsByProvince(country?: string | null, province?: string | null): string[] {
+  const source = SCHOOLS.filter((s) => (!country || s.country === country) && (!province || s.province === province));
   return Array.from(new Set(source.map((s) => s.district))).sort();
 }
 
@@ -24,6 +29,7 @@ export function filterSchools(filters: SchoolFilters): School[] {
   const query = filters.search.trim().toLowerCase();
 
   return SCHOOLS.filter((school) => {
+    if (filters.country && school.country !== filters.country) return false;
     if (filters.province && school.province !== filters.province) return false;
     if (filters.district && school.district !== filters.district) return false;
     if (filters.phase !== "All" && school.phase !== filters.phase) return false;

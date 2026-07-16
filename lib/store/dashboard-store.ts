@@ -3,6 +3,7 @@ import type { PhaseFilterValue, SchoolFilters, StatusFilterValue } from "@/types
 
 export const INITIAL_FILTERS: SchoolFilters = {
   search: "",
+  country: null,
   province: null,
   district: null,
   phase: "All",
@@ -16,6 +17,7 @@ interface DashboardState {
   isMobileFiltersOpen: boolean;
 
   setSearch: (search: string) => void;
+  setCountry: (country: string | null) => void;
   setProvince: (province: string | null) => void;
   setDistrict: (district: string | null) => void;
   setPhase: (phase: PhaseFilterValue) => void;
@@ -38,6 +40,8 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   isMobileFiltersOpen: false,
 
   setSearch: (search) => set((state) => ({ filters: { ...state.filters, search } })),
+  setCountry: (country) =>
+    set((state) => ({ filters: { ...state.filters, country, province: null, district: null } })),
   setProvince: (province) =>
     set((state) => ({ filters: { ...state.filters, province, district: null } })),
   setDistrict: (district) => set((state) => ({ filters: { ...state.filters, district } })),

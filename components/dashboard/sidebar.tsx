@@ -1,6 +1,7 @@
 import { Logo } from "./logo";
 import { Legend } from "./legend";
 import { SearchFilter } from "@/components/filters/search-filter";
+import { CountryFilter } from "@/components/filters/country-filter";
 import { ProvinceFilter } from "@/components/filters/province-filter";
 import { DistrictFilter } from "@/components/filters/district-filter";
 import { PhaseFilter } from "@/components/filters/phase-filter";
@@ -30,6 +31,11 @@ export function Sidebar() {
 
           <div className="flex flex-col gap-3">
             <SearchFilter />
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[12px] font-medium text-muted-foreground">Country</label>
+              <CountryFilter />
+            </div>
 
             <div className="flex flex-col gap-1.5">
               <label className="text-[12px] font-medium text-muted-foreground">Province</label>
