@@ -12,6 +12,14 @@ const OUT_PATH = path.resolve("data/schools.json");
 
 const RWANDA_CENTER = { lat: -1.9403, lng: 29.8739 };
 
+// ISO country code (for Nominatim's countrycodes filter) and a fallback center point
+// used when geocoding fails to resolve a more specific location.
+const COUNTRY_META = {
+  Rwanda: { code: "rw", center: RWANDA_CENTER },
+  Zimbabwe: { code: "zw", center: { lat: -19.0154, lng: 29.1549 } },
+  Kenya: { code: "ke", center: { lat: -1.2921, lng: 36.8219 } },
+};
+
 function slugify(str) {
   return str
     .toLowerCase()
@@ -56,12 +64,12 @@ async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function nominatimSearch(query) {
+async function nominatimSearch(query, countryCode) {
   const url = new URL("https://nominatim.openstreetmap.org/search");
   url.searchParams.set("q", query);
   url.searchParams.set("format", "json");
   url.searchParams.set("limit", "1");
-  url.searchParams.set("countrycodes", "rw");
+  if (countryCode) url.searchParams.set("countrycodes", countryCode);
 
   const res = await fetch(url, {
     headers: {
@@ -75,19 +83,31 @@ async function nominatimSearch(query) {
   return { lat: parseFloat(json[0].lat), lng: parseFloat(json[0].lon) };
 }
 
-async function geocodeLocation(sector, district, province, cache) {
-  const attempts = [
-    `${sector}, ${district} District, ${province} Province, Rwanda`,
-    `${district}, ${province} Province, Rwanda`,
-    `${district}, Rwanda`,
-    `${province} Province, Rwanda`,
-  ];
+async function geocodeLocation(country, sector, district, province, cache) {
+  // Rwanda's admin hierarchy (Sector/District/Province) resolves well with these suffixes;
+  // other countries here don't have a sector-level division, so keep it simpler.
+  const attempts =
+    country === "Rwanda"
+      ? [
+          `${sector}, ${district} District, ${province} Province, Rwanda`,
+          `${district}, ${province} Province, Rwanda`,
+          `${district}, Rwanda`,
+          `${province} Province, Rwanda`,
+        ]
+      : [
+          ...(sector && sector !== district ? [`${sector}, ${district}, ${province}, ${country}`] : []),
+          `${district}, ${province}, ${country}`,
+          `${province}, ${country}`,
+          `${country}`,
+        ];
+
+  const countryCode = COUNTRY_META[country]?.code;
 
   for (const query of attempts) {
     const key = query.toLowerCase();
     if (cache[key]) return cache[key];
 
-    const result = await nominatimSearch(query);
+    const result = await nominatimSearch(query, countryCode);
     await sleep(1100); // respect Nominatim's 1 req/sec usage policy
 
     if (result) {
@@ -96,25 +116,27 @@ async function geocodeLocation(sector, district, province, cache) {
     }
   }
 
-  return RWANDA_CENTER;
+  return COUNTRY_META[country]?.center ?? RWANDA_CENTER;
 }
 
 async function main() {
   await mkdir(path.dirname(OUT_PATH), { recursive: true });
   const cache = await loadCache();
 
-  const locationCoords = new Map(); // "province|district|sector" -> {lat,lng}
+  const locationCoords = new Map(); // "country|province|district|sector" -> {lat,lng}
   const uniqueLocations = [
-    ...new Set(RAW_SCHOOLS.map(([, province, district, sector]) => `${province}|${district}|${sector}`)),
+    ...new Set(
+      RAW_SCHOOLS.map(([country, , province, district, sector]) => `${country}|${province}|${district}|${sector}`)
+    ),
   ];
 
   console.log(`Geocoding ${uniqueLocations.length} unique locations...`);
   let i = 0;
   for (const key of uniqueLocations) {
-    const [province, district, sector] = key.split("|");
+    const [country, province, district, sector] = key.split("|");
     i++;
-    process.stdout.write(`  [${i}/${uniqueLocations.length}] ${sector}, ${district}, ${province}... `);
-    const coords = await geocodeLocation(sector, district, province, cache);
+    process.stdout.write(`  [${i}/${uniqueLocations.length}] ${sector}, ${district}, ${province}, ${country}... `);
+    const coords = await geocodeLocation(country, sector === "null" ? null : sector, district, province, cache);
     locationCoords.set(key, coords);
     console.log(`${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`);
     await saveCache(cache);
@@ -123,7 +145,7 @@ async function main() {
   const usedIds = new Set();
   const schools = RAW_SCHOOLS.map((row) => {
     const [
-      name, province, district, sector, phone,
+      country, name, province, district, sector, phone,
       hc2024, hc2025, students, laptops, teachers,
       phaseRaw, installRaw, subEndRaw, monthsText,
     ] = row;
@@ -135,8 +157,8 @@ async function main() {
     }
     usedIds.add(id);
 
-    const locKey = `${province}|${district}|${sector}`;
-    const base = locationCoords.get(locKey) ?? RWANDA_CENTER;
+    const locKey = `${country}|${province}|${district}|${sector}`;
+    const base = locationCoords.get(locKey) ?? COUNTRY_META[country]?.center ?? RWANDA_CENTER;
     const { dLat, dLng } = jitter(id);
 
     const phase = phaseRaw ?? "Phase I";
@@ -147,9 +169,10 @@ async function main() {
     return {
       id,
       name,
+      country,
       province,
       district,
-      sector,
+      sector: sector ?? undefined,
       latitude: Number((base.lat + dLat).toFixed(6)),
       longitude: Number((base.lng + dLng).toFixed(6)),
       students,

@@ -29,7 +29,7 @@ export function filterSchools(filters: SchoolFilters): School[] {
     if (filters.phase !== "All" && school.phase !== filters.phase) return false;
     if (filters.status !== "All" && school.status !== filters.status) return false;
     if (query) {
-      const haystack = `${school.name} ${school.district} ${school.sector}`.toLowerCase();
+      const haystack = `${school.name} ${school.district} ${school.sector ?? ""}`.toLowerCase();
       if (!haystack.includes(query)) return false;
     }
     return true;

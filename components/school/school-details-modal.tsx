@@ -21,7 +21,7 @@ import { Separator } from "@/components/ui/separator";
 import { useDashboardStore } from "@/lib/store/dashboard-store";
 import { useSelectedSchool } from "@/hooks/use-selected-school";
 import { PHASE_COLORS } from "@/lib/constants";
-import { formatDate, formatPhone } from "@/lib/format";
+import { formatDate, formatOptional, formatPhone } from "@/lib/format";
 import { StatusBadge } from "./status-badge";
 
 export function SchoolDetailsModal() {
@@ -45,7 +45,8 @@ export function SchoolDetailsModal() {
             <div className="min-w-0 text-left">
               <DialogTitle className="text-lg">{school.name}</DialogTitle>
               <DialogDescription>
-                {school.sector}, {school.district} — {school.province} Province
+                {school.sector ? `${school.sector}, ` : ""}
+                {school.district} — {school.province} Province
               </DialogDescription>
             </div>
           </div>
@@ -57,7 +58,7 @@ export function SchoolDetailsModal() {
               items={[
                 { label: "Province", value: school.province },
                 { label: "District", value: school.district },
-                { label: "Sector", value: school.sector },
+                { label: "Sector", value: formatOptional(school.sector) },
                 { label: "Phase", value: school.phase },
               ]}
             />

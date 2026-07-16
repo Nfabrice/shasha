@@ -7,11 +7,6 @@ import { MapFitBounds } from "./map-fit-bounds";
 import { MapFlyToSelection } from "./map-fly-to-selection";
 import { MapMarkers } from "./map-markers";
 
-const RWANDA_MAX_BOUNDS: [[number, number], [number, number]] = [
-  [-5, 26],
-  [1.5, 33.5],
-];
-
 export function MapCanvas() {
   return (
     <MapContainer
@@ -23,8 +18,7 @@ export function MapCanvas() {
       scrollWheelZoom
       zoomSnap={0.25}
       zoomAnimation
-      maxBounds={RWANDA_MAX_BOUNDS}
-      maxBoundsViscosity={0.5}
+      worldCopyJump
       className="h-full w-full"
     >
       <TileLayer

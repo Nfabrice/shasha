@@ -16,7 +16,7 @@ import type { LucideIcon } from "lucide-react";
 import { useDashboardStore } from "@/lib/store/dashboard-store";
 import { useSelectedSchool } from "@/hooks/use-selected-school";
 import { PHASE_COLORS } from "@/lib/constants";
-import { formatDate } from "@/lib/format";
+import { formatDate, formatOptional } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "./status-badge";
 
@@ -64,7 +64,7 @@ export function SchoolDetailsPanel() {
           <div className="flex flex-col gap-2">
             <DetailRow icon={MapPin} label="Province" value={school.province} />
             <DetailRow icon={MapPin} label="District" value={school.district} />
-            <DetailRow icon={MapPin} label="Sector" value={school.sector} />
+            <DetailRow icon={MapPin} label="Sector" value={formatOptional(school.sector)} />
             <DetailRow icon={GraduationCap} label="Students" value={school.students.toLocaleString()} />
             <DetailRow icon={Users} label="Teachers" value={school.teachers.toLocaleString()} />
             <DetailRow icon={Laptop2} label="Laptops" value={school.laptops.toLocaleString()} />

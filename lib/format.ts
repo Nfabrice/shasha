@@ -13,3 +13,7 @@ export function formatDate(dateStr?: string): string {
 export function formatPhone(phone?: string): string {
   return phone && phone.trim().length > 0 ? phone : "Not provided";
 }
+
+export function formatOptional(value?: string): string {
+  return value && value.trim().length > 0 ? value : "—";
+}

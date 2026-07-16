@@ -214,5 +214,65 @@
   "muhura, gatsibo district, eastern province, rwanda": {
     "lat": -1.7500994,
     "lng": 30.2802236
+  },
+  "harare, harare, zimbabwe": {
+    "lat": -17.831773,
+    "lng": 31.045686
+  },
+  "mashonaland east, mashonaland east, zimbabwe": {
+    "lat": -18.6231062,
+    "lng": 31.5687525
+  },
+  "midlands, midlands, zimbabwe": {
+    "lat": -18.9383152,
+    "lng": 30.2583785
+  },
+  "manicaland, manicaland, zimbabwe": {
+    "lat": -18.1324637,
+    "lng": 32.9746353
+  },
+  "zimbabwe": {
+    "lat": -18.4554963,
+    "lng": 29.7468414
+  },
+  "mashonaland west, mashonaland west, zimbabwe": {
+    "lat": -16.3709154,
+    "lng": 28.8567978
+  },
+  "mashonaland central, mashonaland central, zimbabwe": {
+    "lat": -16.0269079,
+    "lng": 31.3222641
+  },
+  "karoi, mashonaland west, zimbabwe": {
+    "lat": -16.8190442,
+    "lng": 29.6836936
+  },
+  "glen norah, harare, zimbabwe": {
+    "lat": -17.9050147,
+    "lng": 30.9688543
+  },
+  "bindura, mashonaland central, zimbabwe": {
+    "lat": -17.2989727,
+    "lng": 31.3299701
+  },
+  "wedza, mashonaland east, zimbabwe": {
+    "lat": -18.621494,
+    "lng": 31.568184
+  },
+  "bulawayo, bulawayo, zimbabwe": {
+    "lat": -20.1560599,
+    "lng": 28.5887063
+  },
+  "kwekwe, midlands, zimbabwe": {
+    "lat": -18.9284366,
+    "lng": 29.8140035
+  },
+  "kuwadzana, harare, zimbabwe": {
+    "lat": -17.8280918,
+    "lng": 30.9188093
+  },
+  "kasarani, nairobi, kenya": {
+    "lat": -1.2124598,
+    "lng": 36.8829731
   }
 }

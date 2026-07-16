@@ -21,13 +21,9 @@ export const STATUS_COLORS: Record<SchoolStatus, { text: string; bg: string; bor
   Expired: { text: "text-red-700", bg: "bg-red-50", border: "border-red-200" },
 };
 
+// Initial center/zoom before MapFitBounds computes the real extent from school data.
 export const RWANDA_CENTER: [number, number] = [-1.9403, 29.8739];
 
-export const RWANDA_BOUNDS: [[number, number], [number, number]] = [
-  [-2.95, 28.75],
-  [-1.0, 30.95],
-];
-
 export const DEFAULT_ZOOM = 8.3;
-export const MIN_ZOOM = 7;
+export const MIN_ZOOM = 3;
 export const MAX_ZOOM = 17;

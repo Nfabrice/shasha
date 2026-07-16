@@ -6,9 +6,10 @@ export interface School {
   id: string;
   name: string;
 
+  country: string;
   province: string;
   district: string;
-  sector: string;
+  sector?: string;
 
   latitude: number;
   longitude: number;
