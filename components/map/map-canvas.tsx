@@ -16,14 +16,16 @@ export function MapCanvas() {
       maxZoom={MAX_ZOOM}
       zoomControl={false}
       scrollWheelZoom
-      zoomSnap={0.25}
+      zoomSnap={1}
       zoomAnimation
       worldCopyJump
       className="h-full w-full"
     >
+      {/* Desaturated in globals.css (.shasha-basemap) so the blue/red school markers stand out. */}
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        className="shasha-basemap"
       />
       <ZoomControl position="topleft" />
       <ScaleControl position="bottomleft" imperial={false} />

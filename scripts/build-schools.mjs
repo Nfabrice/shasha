@@ -83,40 +83,40 @@ async function nominatimSearch(query, countryCode) {
   return { lat: parseFloat(json[0].lat), lng: parseFloat(json[0].lon) };
 }
 
+// Resolves a location to coordinates. `precise` is true only when the sector itself was found;
+// district/province/country fallbacks are approximate.
 async function geocodeLocation(country, sector, district, province, cache) {
   // Rwanda's admin hierarchy (Sector/District/Province) resolves well with these suffixes;
   // other countries here don't have a sector-level division, so keep it simpler.
-  const attempts =
+  const sectorQuery =
+    sector && sector !== district
+      ? country === "Rwanda"
+        ? `${sector}, ${district} District, ${province} Province, Rwanda`
+        : `${sector}, ${district}, ${province}, ${country}`
+      : null;
+  const fallbacks =
     country === "Rwanda"
-      ? [
-          `${sector}, ${district} District, ${province} Province, Rwanda`,
-          `${district}, ${province} Province, Rwanda`,
-          `${district}, Rwanda`,
-          `${province} Province, Rwanda`,
-        ]
-      : [
-          ...(sector && sector !== district ? [`${sector}, ${district}, ${province}, ${country}`] : []),
-          `${district}, ${province}, ${country}`,
-          `${province}, ${country}`,
-          `${country}`,
-        ];
+      ? [`${district}, ${province} Province, Rwanda`, `${district}, Rwanda`, `${province} Province, Rwanda`]
+      : [`${district}, ${province}, ${country}`, `${province}, ${country}`, `${country}`];
+  const attempts = [...(sectorQuery ? [sectorQuery] : []), ...fallbacks];
 
   const countryCode = COUNTRY_META[country]?.code;
 
   for (const query of attempts) {
+    const precise = query === sectorQuery;
     const key = query.toLowerCase();
-    if (cache[key]) return cache[key];
+    if (cache[key]) return { ...cache[key], precise };
 
     const result = await nominatimSearch(query, countryCode);
     await sleep(1100); // respect Nominatim's 1 req/sec usage policy
 
     if (result) {
       cache[key] = result;
-      return result;
+      return { ...result, precise };
     }
   }
 
-  return COUNTRY_META[country]?.center ?? RWANDA_CENTER;
+  return { ...(COUNTRY_META[country]?.center ?? RWANDA_CENTER), precise: false };
 }
 
 async function main() {
@@ -147,7 +147,7 @@ async function main() {
     const [
       country, name, province, district, sector, phone,
       hc2024, hc2025, students, laptops, teachers,
-      phaseRaw, installRaw, subEndRaw, monthsText,
+      phase, installRaw, subEndRaw, monthsText, connection, notes,
     ] = row;
 
     let id = slugify(name);
@@ -158,13 +158,13 @@ async function main() {
     usedIds.add(id);
 
     const locKey = `${country}|${province}|${district}|${sector}`;
-    const base = locationCoords.get(locKey) ?? COUNTRY_META[country]?.center ?? RWANDA_CENTER;
-    const { dLat, dLng } = jitter(id);
+    const base = locationCoords.get(locKey);
+    // Spread schools that could only be placed at district level or coarser over a wider area,
+    // so dozens of schools in one district don't stack on a single point.
+    const { dLat, dLng } = jitter(id, base.precise ? 0.006 : 0.04);
 
-    const phase = phaseRaw ?? "Phase I";
     const installationDate = parseDate(installRaw);
     const subscriptionEnd = parseDate(subEndRaw);
-    const status = monthsText === "Subscription Expired" ? "Expired" : "Active";
 
     return {
       id,
@@ -175,13 +175,17 @@ async function main() {
       sector: sector ?? undefined,
       latitude: Number((base.lat + dLat).toFixed(6)),
       longitude: Number((base.lng + dLng).toFixed(6)),
-      students,
-      teachers,
-      laptops,
-      phase,
+      approximateLocation: base.precise ? undefined : true,
+      connection,
+      students: students ?? undefined,
+      teachers: teachers ?? undefined,
+      laptops: laptops ?? undefined,
+      equipmentNotes: notes ?? undefined,
+      phase: phase ?? undefined,
       installationDate,
       subscriptionEnd,
-      status,
+      // The sheet marks a few schools as expired without giving an end date.
+      subscriptionExpired: !subscriptionEnd && monthsText === "Subscription Expired" ? true : undefined,
       headmasterPhone: phone ?? undefined,
       headcount2024: hc2024 ?? undefined,
       headcount2025: hc2025 ?? undefined,

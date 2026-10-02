@@ -274,5 +274,133 @@
   "kasarani, nairobi, kenya": {
     "lat": -1.2124598,
     "lng": 36.8829731
+  },
+  "gasaka, nyamagabe district, southern province, rwanda": {
+    "lat": -2.4671412,
+    "lng": 29.570457
+  },
+  "tare, nyamagabe district, southern province, rwanda": {
+    "lat": -2.52271,
+    "lng": 29.518388
+  },
+  "gatsibo, eastern province, rwanda": {
+    "lat": -1.6674501,
+    "lng": 30.361037
+  },
+  "rwankuba, karongi district, western province, rwanda": {
+    "lat": -2.1654226,
+    "lng": 29.3596182
+  },
+  "musanze, northern province, rwanda": {
+    "lat": -1.50405,
+    "lng": 29.63631
+  },
+  "rulindo, northern province, rwanda": {
+    "lat": -1.7510857,
+    "lng": 29.9973418
+  },
+  "burera, northern province, rwanda": {
+    "lat": -1.4608823,
+    "lng": 29.8011989
+  },
+  "nyamagabe, southern province, rwanda": {
+    "lat": -2.3993126,
+    "lng": 29.4811002
+  },
+  "busogo, musanze district, northern province, rwanda": {
+    "lat": -1.5545551,
+    "lng": 29.5608225
+  },
+  "huye, southern province, rwanda": {
+    "lat": -2.6053426,
+    "lng": 29.7401547
+  },
+  "karongi, western province, rwanda": {
+    "lat": -2.1707466,
+    "lng": 29.4404247
+  },
+  "nyange, musanze district, northern province, rwanda": {
+    "lat": -1.4294524,
+    "lng": 29.6360166
+  },
+  "remera, musanze district, northern province, rwanda": {
+    "lat": -1.5410797,
+    "lng": 29.7172237
+  },
+  "nyabimata, nyaruguru district, southern province, rwanda": {
+    "lat": -2.7259724,
+    "lng": 29.4073469
+  },
+  "nyabihu, western province, rwanda": {
+    "lat": -1.6411382,
+    "lng": 29.5180007
+  },
+  "muko, musanze district, northern province, rwanda": {
+    "lat": -1.5427615,
+    "lng": 29.6248444
+  },
+  "gahunga, burera district, northern province, rwanda": {
+    "lat": -1.4207433,
+    "lng": 29.677755
+  },
+  "kinoni, burera district, northern province, rwanda": {
+    "lat": -1.4680746,
+    "lng": 29.7396606
+  },
+  "rwaza, musanze district, northern province, rwanda": {
+    "lat": -1.5626713,
+    "lng": 29.6642574
+  },
+  "gakenke, northern province, rwanda": {
+    "lat": -1.7111633,
+    "lng": 29.7666995
+  },
+  "mataba, gakenke district, northern province, rwanda": {
+    "lat": -1.7226848,
+    "lng": 29.7602263
+  },
+  "shingiro, musanze district, northern province, rwanda": {
+    "lat": -1.4966414,
+    "lng": 29.5151781
+  },
+  "nemba, gakenke district, northern province, rwanda": {
+    "lat": -1.6422655,
+    "lng": 29.7869531
+  },
+  "kibumbwe, nyamagabe district, southern province, rwanda": {
+    "lat": -2.4015042,
+    "lng": 29.5361543
+  },
+  "rusasa, gakenke district, northern province, rwanda": {
+    "lat": -1.6236749,
+    "lng": 29.6561895
+  },
+  "janja, gakenke district, northern province, rwanda": {
+    "lat": -1.6661287,
+    "lng": 29.7144475
+  },
+  "ruramba, nyaruguru district, southern province, rwanda": {
+    "lat": -2.5768394,
+    "lng": 29.5163377
+  },
+  "kitabi, nyamagabe district, southern province, rwanda": {
+    "lat": -2.5200809,
+    "lng": 29.433502
+  },
+  "matabeleland, matabeleland, zimbabwe": {
+    "lat": -20.0140244,
+    "lng": 28.8449141
+  },
+  "matabeleland south, matabeleland south, zimbabwe": {
+    "lat": -20.9333276,
+    "lng": 29.0027351
+  },
+  "matabeleland north, matabeleland north, zimbabwe": {
+    "lat": -20.0140244,
+    "lng": 28.8449141
+  },
+  "beitbridge, matabeleland south, zimbabwe": {
+    "lat": -22.1986233,
+    "lng": 29.9917535
   }
 }

@@ -14,8 +14,8 @@ export function MapEmptyState() {
   return (
     <div className="pointer-events-none absolute inset-0 z-400 flex items-center justify-center px-4">
       <div className="pointer-events-auto flex max-w-xs flex-col items-center gap-3 rounded-2xl border border-border/70 bg-card/95 p-6 text-center shadow-xl backdrop-blur-sm">
-        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-50">
-          <SearchX className="h-5 w-5 text-brand-500" />
+        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-muted">
+          <SearchX className="h-5 w-5 text-muted-foreground" />
         </span>
         <div>
           <p className="text-[14px] font-semibold text-navy-900">No schools found</p>
@@ -26,7 +26,7 @@ export function MapEmptyState() {
         <Button
           onClick={resetFilters}
           variant="outline"
-          className="h-9 rounded-lg border-border text-[13px]"
+          className="h-9 rounded-xl border-border text-[13px]"
         >
           Reset Filters
         </Button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu } from "lucide-react";
+import { List } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useDashboardStore } from "@/lib/store/dashboard-store";
 import { Logo } from "./logo";
@@ -17,14 +17,15 @@ export function Header() {
         <SheetTrigger asChild>
           <button
             type="button"
-            aria-label="Open filters"
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-navy-900 transition-colors hover:bg-brand-50"
+            aria-label="Open school list and filters"
+            className="flex h-9 items-center gap-2 rounded-xl border border-border px-3 text-[13px] font-semibold text-navy-900 transition-colors hover:bg-muted"
           >
-            <Menu className="h-5 w-5" />
+            <List className="h-4 w-4" />
+            Schools
           </button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-[320px] gap-0 p-0 sm:w-[360px]">
-          <SheetTitle className="sr-only">Filters and Legend</SheetTitle>
+        <SheetContent side="left" className="w-[340px] gap-0 p-0 sm:w-[380px]">
+          <SheetTitle className="sr-only">Schools and filters</SheetTitle>
           <Sidebar />
         </SheetContent>
       </Sheet>

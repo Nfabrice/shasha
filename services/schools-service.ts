@@ -1,5 +1,7 @@
 import rawSchools from "@/data/schools.json";
-import type { DashboardStats, School, SchoolFilters } from "@/types/school";
+import { EXPIRING_SOON_DAYS } from "@/lib/constants";
+import { daysUntil } from "@/lib/format";
+import type { DashboardStats, School, SchoolFilters, SubscriptionStatus } from "@/types/school";
 
 const SCHOOLS = rawSchools as School[];
 
@@ -25,17 +27,38 @@ export function getDistrictsByProvince(country?: string | null, province?: strin
   return Array.from(new Set(source.map((s) => s.district))).sort();
 }
 
+export function isConnected(school: School): boolean {
+  return school.connection === "Connected";
+}
+
+/** Subscription state of a connected school; undefined when the sheet has no subscription data. */
+export function getSubscriptionStatus(school: School): SubscriptionStatus | undefined {
+  if (!isConnected(school)) return undefined;
+  if (school.subscriptionEnd) {
+    const days = daysUntil(school.subscriptionEnd);
+    if (days < 0) return "Expired";
+    return days <= EXPIRING_SOON_DAYS ? "Expiring soon" : "Active";
+  }
+  return school.subscriptionExpired ? "Expired" : undefined;
+}
+
 export function filterSchools(filters: SchoolFilters): School[] {
   const query = filters.search.trim().toLowerCase();
 
   return SCHOOLS.filter((school) => {
+    if (filters.connection !== "All" && school.connection !== filters.connection) return false;
     if (filters.country && school.country !== filters.country) return false;
     if (filters.province && school.province !== filters.province) return false;
     if (filters.district && school.district !== filters.district) return false;
     if (filters.phase !== "All" && school.phase !== filters.phase) return false;
-    if (filters.status !== "All" && school.status !== filters.status) return false;
+    if (filters.subscription !== "All") {
+      const status = getSubscriptionStatus(school);
+      const isExpired = status === "Expired";
+      if (!status || isExpired !== (filters.subscription === "Expired")) return false;
+    }
     if (query) {
-      const haystack = `${school.name} ${school.district} ${school.sector ?? ""}`.toLowerCase();
+      const haystack =
+        `${school.name} ${school.district} ${school.sector ?? ""} ${school.province} ${school.country}`.toLowerCase();
       if (!haystack.includes(query)) return false;
     }
     return true;
@@ -43,12 +66,13 @@ export function filterSchools(filters: SchoolFilters): School[] {
 }
 
 export function computeStats(schools: School[]): DashboardStats {
+  const connected = schools.filter(isConnected);
   return {
-    schoolsConnected: schools.length,
-    provincesReached: new Set(schools.map((s) => s.province)).size,
-    districtsCovered: new Set(schools.map((s) => s.district)).size,
-    studentsReached: schools.reduce((sum, s) => sum + s.students, 0),
-    teachersEmpowered: schools.reduce((sum, s) => sum + s.teachers, 0),
-    installationPhases: new Set(schools.map((s) => s.phase)).size,
+    total: schools.length,
+    connected: connected.length,
+    notConnected: schools.length - connected.length,
+    studentsReached: connected.reduce((sum, s) => sum + (s.students ?? 0), 0),
+    teachersEmpowered: connected.reduce((sum, s) => sum + (s.teachers ?? 0), 0),
+    districtsCovered: new Set(connected.map((s) => `${s.country}|${s.district}`)).size,
   };
 }

@@ -23,7 +23,7 @@ export function CountryFilter() {
       value={country ?? ALL_VALUE}
       onValueChange={(value) => setCountry(value === ALL_VALUE ? null : value)}
     >
-      <SelectTrigger className="h-10 w-full rounded-xl border-border bg-background text-sm shadow-none focus-visible:ring-brand-400">
+      <SelectTrigger className="h-9 w-full rounded-lg border-border bg-background text-[13px] shadow-none">
         <SelectValue placeholder="All Countries" />
       </SelectTrigger>
       <SelectContent>

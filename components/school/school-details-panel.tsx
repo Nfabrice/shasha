@@ -1,106 +1,153 @@
 "use client";
 
+import { useEffect, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  Building2,
-  CalendarClock,
-  CalendarDays,
-  ChevronRight,
-  GraduationCap,
-  Laptop2,
-  MapPin,
-  Users,
-  X,
-} from "lucide-react";
+import { ChevronRight, GraduationCap, Laptop2, MapPin, Users, X } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useDashboardStore } from "@/lib/store/dashboard-store";
 import { useSelectedSchool } from "@/hooks/use-selected-school";
-import { PHASE_COLORS } from "@/lib/constants";
-import { formatDate, formatOptional } from "@/lib/format";
+import { formatCount, formatDate, formatLocality } from "@/lib/format";
 import { Button } from "@/components/ui/button";
-import { StatusBadge } from "./status-badge";
+import { ConnectionBadge, SubscriptionBadge } from "./connection-badge";
 
 export function SchoolDetailsPanel() {
   const school = useSelectedSchool();
   const clearSelectedSchool = useDashboardStore((state) => state.clearSelectedSchool);
   const openDetailsModal = useDashboardStore((state) => state.openDetailsModal);
+  const isModalOpen = useDashboardStore((state) => state.isDetailsModalOpen);
+
+  // Escape closes the panel (the modal handles its own Escape).
+  useEffect(() => {
+    if (!school || isModalOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") clearSelectedSchool();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [school, isModalOpen, clearSelectedSchool]);
 
   return (
     <AnimatePresence>
       {school && (
         <motion.div
           key={school.id}
-          initial={{ opacity: 0, y: 24, scale: 1 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 24, scale: 1 }}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 16 }}
           transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute inset-x-0 bottom-0 top-auto z-600 max-h-[70vh] w-full overflow-y-auto rounded-t-2xl border border-border/70 bg-card p-4 shadow-xl sm:inset-x-auto sm:top-4 sm:right-4 sm:bottom-auto sm:max-h-none sm:w-[320px] sm:rounded-2xl"
+          className="scroll-thin absolute inset-x-0 bottom-0 top-auto z-600 max-h-[70%] w-full overflow-y-auto rounded-t-2xl border border-border/70 bg-card shadow-[0_24px_48px_-16px_rgba(15,23,42,0.35)] sm:inset-x-auto sm:right-3 sm:top-3 sm:bottom-auto sm:max-h-[calc(100%-1.5rem)] sm:w-86 sm:rounded-2xl"
         >
-          <div className="mb-3 flex items-start justify-between gap-2">
-            <div className="flex items-center gap-2.5">
-              <span
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
-                style={{ backgroundColor: `${PHASE_COLORS[school.phase].marker}1a` }}
+          <div
+            className={cn(
+              "h-1 w-full",
+              school.connection === "Connected" ? "bg-connected" : "bg-not-connected",
+            )}
+          />
+
+          <div className="px-4 pb-3.5 pt-3.5">
+            <div className="flex items-center justify-between gap-2">
+              <ConnectionBadge connection={school.connection} />
+              <button
+                type="button"
+                onClick={clearSelectedSchool}
+                aria-label="Close details"
+                className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               >
-                <Building2 className="h-4 w-4" style={{ color: PHASE_COLORS[school.phase].marker }} />
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <h2 className="mt-2.5 text-[17px] font-bold leading-snug tracking-tight text-navy-900">{school.name}</h2>
+            <p className="mt-1 flex items-start gap-1.5 text-[12px] leading-snug text-muted-foreground">
+              <MapPin className="mt-px h-3.5 w-3.5 shrink-0" />
+              <span>
+                {formatLocality(school)} · {school.province}
+                {school.country !== "Rwanda" && `, ${school.country}`}
+                {school.approximateLocation && (
+                  <span className="block text-[11px] text-muted-foreground/80">Approximate location on map</span>
+                )}
               </span>
-              <div className="min-w-0">
-                <p className="truncate text-[14px] font-bold leading-tight text-navy-900">
-                  {school.name}
-                </p>
-                <p className="text-[11px] font-medium text-muted-foreground">{school.phase}</p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={clearSelectedSchool}
-              aria-label="Close details"
-              className="shrink-0 rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            </p>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <DetailRow icon={MapPin} label="Province" value={school.province} />
-            <DetailRow icon={MapPin} label="District" value={school.district} />
-            <DetailRow icon={MapPin} label="Sector" value={formatOptional(school.sector)} />
-            <DetailRow icon={GraduationCap} label="Students" value={school.students.toLocaleString()} />
-            <DetailRow icon={Users} label="Teachers" value={school.teachers.toLocaleString()} />
-            <DetailRow icon={Laptop2} label="Laptops" value={school.laptops.toLocaleString()} />
-            <DetailRow icon={CalendarDays} label="Installed" value={formatDate(school.installationDate)} />
-            <DetailRow
-              icon={CalendarClock}
-              label="Subscription Ends"
-              value={formatDate(school.subscriptionEnd)}
+          <div className="grid grid-cols-3 gap-2 px-4">
+            <Metric icon={GraduationCap} label="Students" value={formatCount(school.students)} />
+            <Metric icon={Users} label="Teachers" value={formatCount(school.teachers)} />
+            <Metric icon={Laptop2} label="Laptops" value={formatCount(school.laptops)} />
+          </div>
+
+          {school.connection === "Not connected" && (
+            <p className="mx-4 mt-3 rounded-xl bg-not-connected-soft px-3 py-2.5 text-[12px] font-medium leading-snug text-not-connected-dark">
+              Starlink hasn&apos;t been installed at this school yet.
+            </p>
+          )}
+
+          <dl className="mt-2 flex flex-col divide-y divide-border/70 px-4">
+            {school.connection === "Connected" && (
+              <>
+                <Row label="Phase" value={school.phase ?? "—"} />
+                <Row label="Installed" value={formatDate(school.installationDate)} />
+                <Row
+                  label="Subscription"
+                  value={
+                    <span className="flex items-center gap-2">
+                      {school.subscriptionEnd && (
+                        <span className="text-[12px] font-medium text-muted-foreground">
+                          {formatDate(school.subscriptionEnd)}
+                        </span>
+                      )}
+                      <SubscriptionBadge school={school} />
+                    </span>
+                  }
+                />
+              </>
+            )}
+            <Row
+              label="Headmaster"
+              value={
+                school.headmasterPhone ? (
+                  <a href={`tel:${school.headmasterPhone.split(" / ")[0]}`} className="hover:underline">
+                    {school.headmasterPhone}
+                  </a>
+                ) : (
+                  "Not provided"
+                )
+              }
             />
-            <div className="flex items-center justify-between pt-1">
-              <span className="text-[12px] font-medium text-muted-foreground">Status</span>
-              <StatusBadge status={school.status} />
-            </div>
-          </div>
+          </dl>
 
-          <Button
-            onClick={openDetailsModal}
-            className="mt-4 h-10 w-full rounded-xl bg-brand-500 font-semibold text-white hover:bg-brand-600"
-          >
-            View Full Details
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+          <div className="px-4 pb-4 pt-2">
+            <Button
+              onClick={openDetailsModal}
+              className="h-10 w-full rounded-xl bg-navy-900 font-semibold text-white hover:bg-navy-800"
+            >
+              View full profile
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
   );
 }
 
-function DetailRow({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string }) {
+function Metric({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between gap-3">
-      <span className="flex items-center gap-1.5 text-[12px] font-medium text-muted-foreground">
-        <Icon className="h-3.5 w-3.5" />
+    <div className="flex flex-col gap-1 rounded-xl bg-muted/70 px-2.5 py-2">
+      <span className="flex items-center gap-1 text-[10.5px] font-medium text-muted-foreground">
+        <Icon className="h-3 w-3" />
         {label}
       </span>
-      <span className="truncate text-[12px] font-semibold text-navy-900">{value}</span>
+      <span className="text-[15px] font-bold leading-none tabular-nums text-navy-900">{value}</span>
+    </div>
+  );
+}
+
+function Row({ label, value }: { label: string; value: ReactNode }) {
+  return (
+    <div className="flex min-h-10 items-center justify-between gap-3 py-2">
+      <dt className="text-[12px] font-medium text-muted-foreground">{label}</dt>
+      <dd className="min-w-0 truncate text-right text-[12px] font-semibold text-navy-900">{value}</dd>
     </div>
   );
 }

@@ -1,14 +1,16 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, type ReactNode } from "react";
 import dynamic from "next/dynamic";
-import { Maximize, Minimize } from "lucide-react";
+import { LocateFixed, Maximize, Minimize } from "lucide-react";
 import { useFullscreen } from "@/hooks/use-fullscreen";
 import { useSyncSelectionWithFilters } from "@/hooks/use-sync-selection-with-filters";
+import { useDashboardStore } from "@/lib/store/dashboard-store";
 import { SchoolDetailsPanel } from "@/components/school/school-details-panel";
 import { MapEmptyState } from "@/components/dashboard/empty-state";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MapSkeleton } from "./map-skeleton";
-import { StarlinkBadge } from "./starlink-badge";
+import { MapLegend } from "./map-legend";
 
 const MapCanvas = dynamic(() => import("./map-canvas").then((mod) => mod.MapCanvas), {
   ssr: false,
@@ -18,27 +20,46 @@ const MapCanvas = dynamic(() => import("./map-canvas").then((mod) => mod.MapCanv
 export function MapView() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { isFullscreen, toggle } = useFullscreen(containerRef);
+  const requestFit = useDashboardStore((state) => state.requestFit);
   useSyncSelectionWithFilters();
 
   return (
     <div
       ref={containerRef}
-      className="relative h-full w-full overflow-hidden rounded-2xl border border-border/60 bg-muted shadow-sm"
+      className="relative h-full w-full overflow-hidden rounded-2xl border border-border/70 bg-muted shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
     >
       <MapCanvas />
 
-      <button
-        type="button"
-        onClick={toggle}
-        aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
-        className="absolute left-3 top-[86px] z-500 flex h-9 w-9 items-center justify-center rounded-md border border-border bg-white text-navy-900 shadow-md transition-colors hover:border-brand-300 hover:bg-brand-50 hover:text-brand-600"
-      >
-        {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
-      </button>
+      <div className="absolute left-3 top-23.5 z-500 flex flex-col gap-2">
+        <MapButton label="Fit to visible schools" onClick={requestFit}>
+          <LocateFixed className="h-4 w-4" />
+        </MapButton>
+        <MapButton label={isFullscreen ? "Exit fullscreen" : "Fullscreen"} onClick={toggle}>
+          {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+        </MapButton>
+      </div>
 
       <MapEmptyState />
+      <MapLegend />
       <SchoolDetailsPanel />
-      <StarlinkBadge />
     </div>
+  );
+}
+
+function MapButton({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          onClick={onClick}
+          aria-label={label}
+          className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-white text-navy-900 shadow-[0_8px_24px_-10px_rgba(15,23,42,0.3)] transition-colors hover:bg-muted"
+        >
+          {children}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="right">{label}</TooltipContent>
+    </Tooltip>
   );
 }

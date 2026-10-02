@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Shasha Network | Schools Coverage Dashboard",
+  title: "Shasha Network | School Connectivity",
   description:
-    "Interactive GIS dashboard tracking Shasha Network connected schools, students, teachers, and Starlink installations across Rwanda.",
+    "Interactive map of Shasha Network schools: which are connected to Starlink, which are not yet, and the students and teachers they reach.",
 };
 
 export default function RootLayout({

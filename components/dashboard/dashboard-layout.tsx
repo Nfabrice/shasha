@@ -9,11 +9,11 @@ export function DashboardLayout() {
     <div className="flex h-dvh w-full flex-col overflow-hidden bg-canvas md:flex-row">
       <Header />
 
-      <aside className="hidden w-[340px] shrink-0 border-r border-border/60 bg-card md:block lg:w-[368px]">
+      <aside className="hidden w-[340px] shrink-0 border-r border-border/70 bg-card md:block lg:w-[372px]">
         <Sidebar />
       </aside>
 
-      <main className="flex min-h-0 flex-1 flex-col gap-4 p-4 md:p-5">
+      <main className="flex min-h-0 min-w-0 flex-1 flex-col gap-4 p-3 sm:p-4 md:p-5">
         <StatsBar />
         <div className="min-h-0 flex-1">
           <MapView />
