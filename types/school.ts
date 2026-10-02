@@ -16,8 +16,8 @@ export interface School {
 
   latitude: number;
   longitude: number;
-  /** True when the school could only be placed at district level or coarser. */
-  approximateLocation?: boolean;
+  /** True when the position is the school's confirmed GPS location, not an estimate near its sector/district. */
+  locationConfirmed?: boolean;
 
   connection: ConnectionStatus;
 

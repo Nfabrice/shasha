@@ -16,8 +16,11 @@ export const INITIAL_FILTERS: SchoolFilters = {
   subscription: "All",
 };
 
+export type Basemap = "map" | "satellite";
+
 interface DashboardState {
   filters: SchoolFilters;
+  basemap: Basemap;
   selectedSchoolId: string | null;
   hoveredSchoolId: string | null;
   isDetailsModalOpen: boolean;
@@ -43,10 +46,12 @@ interface DashboardState {
 
   setMobileFiltersOpen: (open: boolean) => void;
   requestFit: () => void;
+  setBasemap: (basemap: Basemap) => void;
 }
 
 export const useDashboardStore = create<DashboardState>((set) => ({
   filters: INITIAL_FILTERS,
+  basemap: "map",
   selectedSchoolId: null,
   hoveredSchoolId: null,
   isDetailsModalOpen: false,
@@ -80,4 +85,5 @@ export const useDashboardStore = create<DashboardState>((set) => ({
 
   setMobileFiltersOpen: (open) => set({ isMobileFiltersOpen: open }),
   requestFit: () => set((state) => ({ fitRequest: state.fitRequest + 1 })),
+  setBasemap: (basemap) => set({ basemap }),
 }));

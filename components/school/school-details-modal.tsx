@@ -87,9 +87,13 @@ export function SchoolDetailsModal() {
                 { label: "Province", value: school.province },
                 { label: "District", value: school.district },
                 { label: "Sector", value: formatOptional(school.sector) },
-                ...(school.approximateLocation
-                  ? [{ label: "Map position", value: "Approximate (placed within the district)", wide: true }]
-                  : []),
+                {
+                  label: "Map position",
+                  value: school.locationConfirmed
+                    ? "Confirmed GPS location"
+                    : "Approximate, near the center of its sector or district (GPS not yet confirmed)",
+                  wide: true,
+                },
               ]}
             />
           </Section>

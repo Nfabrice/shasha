@@ -2,7 +2,7 @@
 
 import { useEffect, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronRight, GraduationCap, Laptop2, MapPin, Users, X } from "lucide-react";
+import { BadgeCheck, ChevronRight, GraduationCap, Laptop2, MapPin, Users, X } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useDashboardStore } from "@/lib/store/dashboard-store";
@@ -63,8 +63,15 @@ export function SchoolDetailsPanel() {
               <span>
                 {formatLocality(school)} · {school.province}
                 {school.country !== "Rwanda" && `, ${school.country}`}
-                {school.approximateLocation && (
-                  <span className="block text-[11px] text-muted-foreground/80">Approximate location on map</span>
+                {school.locationConfirmed ? (
+                  <span className="mt-0.5 flex items-center gap-1 text-[11px] font-medium text-emerald-700">
+                    <BadgeCheck className="h-3 w-3" />
+                    GPS location confirmed
+                  </span>
+                ) : (
+                  <span className="block text-[11px] text-muted-foreground/80">
+                    Approximate position · GPS not yet confirmed
+                  </span>
                 )}
               </span>
             </p>

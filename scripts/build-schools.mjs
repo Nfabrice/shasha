@@ -2,6 +2,11 @@
 // geocoding each unique Sector/District/Province via OpenStreetMap Nominatim.
 // Run with: node scripts/build-schools.mjs
 // Coordinates are cached in scripts/.geocode-cache.json so re-runs don't hit the network.
+//
+// Real GPS positions go in data/school-coordinates.csv (the "coordinates" column, as
+// "latitude, longitude" — the format Google Maps copies). Schools with coordinates there are
+// placed exactly and marked locationConfirmed; the rest keep an estimated position near the
+// center of their sector or district.
 
 import { writeFile, readFile, mkdir } from "node:fs/promises";
 import path from "node:path";
@@ -9,6 +14,10 @@ import { RAW_SCHOOLS } from "./raw-schools.mjs";
 
 const CACHE_PATH = new URL("./.geocode-cache.json", import.meta.url);
 const OUT_PATH = path.resolve("data/schools.json");
+const COORDINATES_PATH = path.resolve("data/school-coordinates.csv");
+// Confirmed positions further than this from the school's district/sector estimate are reported,
+// since they usually mean swapped latitude/longitude or a pin dropped in the wrong place.
+const SUSPICIOUS_DISTANCE_KM = 50;
 
 const RWANDA_CENTER = { lat: -1.9403, lng: 29.8739 };
 
@@ -45,6 +54,75 @@ function jitter(seedStr, magnitude = 0.006) {
   const a = ((h % 1000) / 1000) * Math.PI * 2;
   const r = (((h >> 8) % 1000) / 1000) * magnitude;
   return { dLat: Math.cos(a) * r, dLng: Math.sin(a) * r };
+}
+
+// Minimal CSV parser: comma-separated, double-quoted fields may contain commas and "" escapes.
+function parseCsv(text) {
+  const rows = [];
+  let row = [];
+  let field = "";
+  let quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (quoted) {
+      if (c === '"' && text[i + 1] === '"') {
+        field += '"';
+        i++;
+      } else if (c === '"') {
+        quoted = false;
+      } else {
+        field += c;
+      }
+    } else if (c === '"') {
+      quoted = true;
+    } else if (c === ",") {
+      row.push(field);
+      field = "";
+    } else if (c === "\n" || c === "\r") {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(field);
+      if (row.some((value) => value.trim() !== "")) rows.push(row);
+      row = [];
+      field = "";
+    } else {
+      field += c;
+    }
+  }
+  row.push(field);
+  if (row.some((value) => value.trim() !== "")) rows.push(row);
+  return rows;
+}
+
+/** school id -> { lat, lng } for every row of data/school-coordinates.csv with coordinates filled in. */
+async function loadConfirmedCoordinates() {
+  let text;
+  try {
+    text = await readFile(COORDINATES_PATH, "utf-8");
+  } catch {
+    return new Map();
+  }
+  const [header, ...rows] = parseCsv(text);
+  const idCol = header.indexOf("id");
+  const coordCol = header.indexOf("coordinates");
+  const confirmed = new Map();
+  for (const row of rows) {
+    const raw = (row[coordCol] ?? "").trim();
+    if (!raw) continue;
+    const [lat, lng] = raw.split(/[\s,]+/).map(Number);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) {
+      throw new Error(`Invalid coordinates for ${row[idCol]}: "${raw}" (expected "latitude, longitude")`);
+    }
+    confirmed.set(row[idCol], { lat, lng });
+  }
+  return confirmed;
+}
+
+function distanceKm(a, b) {
+  const rad = Math.PI / 180;
+  const dLat = (b.lat - a.lat) * rad;
+  const dLng = (b.lng - a.lng) * rad;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLng / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(h));
 }
 
 async function loadCache() {
@@ -142,6 +220,7 @@ async function main() {
     await saveCache(cache);
   }
 
+  const confirmedCoordinates = await loadConfirmedCoordinates();
   const usedIds = new Set();
   const schools = RAW_SCHOOLS.map((row) => {
     const [
@@ -162,6 +241,12 @@ async function main() {
     // Spread schools that could only be placed at district level or coarser over a wider area,
     // so dozens of schools in one district don't stack on a single point.
     const { dLat, dLng } = jitter(id, base.precise ? 0.006 : 0.04);
+    const confirmed = confirmedCoordinates.get(id);
+    if (confirmed && distanceKm(confirmed, base) > SUSPICIOUS_DISTANCE_KM) {
+      console.warn(
+        `  ! ${name}: confirmed position is ${Math.round(distanceKm(confirmed, base))} km from ${district} — check it`,
+      );
+    }
 
     const installationDate = parseDate(installRaw);
     const subscriptionEnd = parseDate(subEndRaw);
@@ -173,9 +258,9 @@ async function main() {
       province,
       district,
       sector: sector ?? undefined,
-      latitude: Number((base.lat + dLat).toFixed(6)),
-      longitude: Number((base.lng + dLng).toFixed(6)),
-      approximateLocation: base.precise ? undefined : true,
+      latitude: Number((confirmed ? confirmed.lat : base.lat + dLat).toFixed(6)),
+      longitude: Number((confirmed ? confirmed.lng : base.lng + dLng).toFixed(6)),
+      locationConfirmed: confirmed ? true : undefined,
       connection,
       students: students ?? undefined,
       teachers: teachers ?? undefined,
@@ -192,8 +277,11 @@ async function main() {
     };
   });
 
+  const unknownIds = [...confirmedCoordinates.keys()].filter((id) => !usedIds.has(id));
+  if (unknownIds.length > 0) console.warn(`  ! Unknown ids in ${COORDINATES_PATH}: ${unknownIds.join(", ")}`);
+
   await writeFile(OUT_PATH, JSON.stringify(schools, null, 2));
-  console.log(`\nWrote ${schools.length} schools to ${OUT_PATH}`);
+  console.log(`\nWrote ${schools.length} schools to ${OUT_PATH} (${confirmedCoordinates.size} with confirmed locations)`);
 }
 
 main().catch((err) => {

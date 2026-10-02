@@ -11,6 +11,7 @@ import { MapEmptyState } from "@/components/dashboard/empty-state";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MapSkeleton } from "./map-skeleton";
 import { MapLegend } from "./map-legend";
+import { BasemapToggle } from "./basemap-toggle";
 
 const MapCanvas = dynamic(() => import("./map-canvas").then((mod) => mod.MapCanvas), {
   ssr: false,
@@ -39,6 +40,7 @@ export function MapView() {
         </MapButton>
       </div>
 
+      <BasemapToggle />
       <MapEmptyState />
       <MapLegend />
       <SchoolDetailsPanel />

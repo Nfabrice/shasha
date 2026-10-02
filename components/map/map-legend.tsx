@@ -1,13 +1,16 @@
 "use client";
 
-import { Satellite } from "lucide-react";
+import { MapPinOff, Satellite } from "lucide-react";
 import { useFilteredSchools } from "@/hooks/use-filtered-schools";
+import { useDashboardStore } from "@/lib/store/dashboard-store";
 import { CONNECTION_COLORS } from "@/lib/constants";
 import { isConnected } from "@/services/schools-service";
 
 export function MapLegend() {
   const schools = useFilteredSchools();
+  const basemap = useDashboardStore((state) => state.basemap);
   const connected = schools.filter(isConnected).length;
+  const unconfirmed = schools.filter((school) => !school.locationConfirmed).length;
   const { Connected, "Not connected": notConnected } = CONNECTION_COLORS;
   const rows = [
     { label: "Connected", count: connected, color: Connected.base },
@@ -52,6 +55,14 @@ export function MapLegend() {
           </span>
           Cluster rings show the mix of schools inside.
         </div>
+        {basemap === "satellite" && unconfirmed > 0 && (
+          <div className="flex items-start gap-2 border-t border-border/70 pt-2.5 text-[11px] leading-snug text-muted-foreground">
+            <MapPinOff className="mt-px h-3.5 w-3.5 shrink-0" />
+            {unconfirmed === schools.length
+              ? "Positions are approximate until each school's GPS location is confirmed."
+              : `${unconfirmed} of ${schools.length} positions are approximate until GPS is confirmed.`}
+          </div>
+        )}
       </div>
     </>
   );
