@@ -1,4 +1,4 @@
-export type Phase = "Phase I" | "Phase II" | "Phase III" | "Phase IV";
+export type Phase = "Phase I" | "Phase II" | "Phase III" | "Phase IV" | "Phase V";
 
 /** The sheet's Status column: whether Shasha has installed Starlink at the school. */
 export type ConnectionStatus = "Connected" | "Not connected";

@@ -1,6 +1,6 @@
 import type { ConnectionStatus, Phase } from "@/types/school";
 
-export const PHASE_ORDER: Phase[] = ["Phase I", "Phase II", "Phase III", "Phase IV"];
+export const PHASE_ORDER: Phase[] = ["Phase I", "Phase II", "Phase III", "Phase IV", "Phase V"];
 
 // Keep in sync with --color-connected / --color-not-connected in app/globals.css.
 // Leaflet markers are plain HTML strings, so they need the raw values.

@@ -113,8 +113,10 @@ export const RAW_SCHOOLS = [
   ["Zimbabwe", "Kwekwe High School", "Midlands", "Kwekwe", null, null, 0, 0, 1500, 25, 56, "Phase II", null, null, null, "Connected", null],
   ["Zimbabwe", "Kuwadzana 2 High School", "Harare", "Kuwadzana", null, null, 0, 0, 1700, 40, 75, "Phase I", null, null, null, "Connected", null],
 
+  // Kenya — connected
+  ["Kenya", "Mwiki Primary", "Nairobi", "Kasarani", null, "0788549878", 0, 0, 6000, 100, 62, "Phase V", "6/29/2026", "6/29/2027", null, "Connected", null],
+
   // Not connected yet — no phase or installation data.
-  ["Kenya", "Mwiki Primary", "Nairobi", "Kasarani", null, "0788549878", 0, 0, 6000, 100, 62, null, null, null, null, "Not connected", null],
   ["Rwanda", "GS Ruyange I TSS", "Northern", "Burera", null, "0788982755", 0, 0, 1078, 0, 11, null, null, null, null, "Not connected", null],
   ["Rwanda", "EP Mujuga", "Southern", "Nyamagabe", null, "0792458486", 0, 0, 28925, 1, 3, null, null, null, null, "Not connected", null],
   ["Rwanda", "EMSA", "Southern", "Nyamagabe", null, "0788769047", 0, 0, null, 40, 54, null, null, null, null, "Not connected", null],
